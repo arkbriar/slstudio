@@ -46,7 +46,7 @@ static uint8 LCR_CMD_PKT_CalcChecksum(void);
 ErrorCode_t LCR_CMD_PKT_ConnectToLCR(void)
 {
 	/* Open tcp connection with LCr */
-	LCR_PKT_Socket = TCP_Connect(LCR_CMD_IP, LCR_CMD_PORT);
+    LCR_PKT_Socket = TCP_Connect(const_cast<char*>(LCR_CMD_IP), LCR_CMD_PORT);
 
 	if(LCR_PKT_Socket < 0)
 		return FAIL;

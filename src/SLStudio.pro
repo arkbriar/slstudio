@@ -6,7 +6,7 @@
 #
 #-----------------------------------------------------
 
-QT       += core gui opengl testlib
+QT       += core gui opengl
 CONFIG   += qt thread sse2
 TARGET = SLStudio
 TEMPLATE = app
@@ -144,6 +144,19 @@ unix:!macx {
 }
 # Windows
 win32 {
+    # explicit libraries for opengl and system
+    LIBS += -lopengl32 \
+            -lgdi32 \
+            -lkernel32 \
+            -luser32 \
+            -lwinspool \
+            -lcomdlg32 \
+            -ladvapi32 \
+            -lshell32 \
+            -lole32 \
+            -loleaut32 \
+            -luuid
+
     # Boost join
     DEFINES += DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
 
@@ -153,17 +166,17 @@ win32 {
     CONFIG(debug,debug|release){
         #debug
         LIBS += -L"$$(OPENCV_DIR)" \ #C:\opencv\build\x64\vc12\lib
-                -lopencv_core2411d \
-                -lopencv_highgui2411d \
-                -lopencv_imgproc2411d \
-                -lopencv_calib3d2411d
+                -lopencv_core2413d \
+                -lopencv_highgui2413d \
+                -lopencv_imgproc2413d \
+                -lopencv_calib3d2413d
     } else {
         #release
         LIBS += -L"$$(OPENCV_DIR)" \
-                -lopencv_core2411 \
-                -lopencv_highgui2411 \
-                -lopencv_imgproc2411 \
-                -lopencv_calib3d2411
+                -lopencv_core2413 \
+                -lopencv_highgui2413 \
+                -lopencv_imgproc2413 \
+                -lopencv_calib3d2413
     }
 
     # pcl
@@ -215,41 +228,41 @@ win32 {
     INCLUDEPATH += "$$(BOOST_ROOT)/include" \
                    "$$(EIGEN_ROOT)" \
                    "$$(FLANN_ROOT)/include"
-    LIBS += -L"$$(BOOST_ROOT)/lib" -lboost_system-vc100-mt-1_50 -lboost_system-vc100-mt-gd-1_50
+    LIBS += -L"$$(BOOST_ROOT)/lib" -lboost_system-vc140-mt-1_63 -lboost_system-vc140-mt-gd-1_63
 
     # vtk
     INCLUDEPATH += "$$(VTK_INCLUDE_DIR)" #C:\Program Files\VTK\include\vtk-5.10
 
     CONFIG(debug,debug|release){
     #debug
-    LIBS += -L"$$(VTK_DIR)" \ #C:\Program Files\VTK\lib\vtk-5.10
-            -lvtkGraphics-gd \
-            -lQVTK-gd \
+    LIBS += -L"$$(VTK_DIR)" \
+            -lvtkpng-gd-7.1 \
+            -lvtksys-gd-7.1 \
+            -lvtktiff-gd-7.1 \
+            -lvtkjpeg-gd-7.1 \
+            -lvtkexpat-gd-7.1 \
+            -lvtkzlib-gd-7.1 \
+            -lvtkGUISupportQt-gd-7.1 \
             -lvtkCommon-gd \
-            -lvtkFiltering-gd \
+            -lvtkFilters-gd \
             -lvtkRendering-gd \
             -lvtkIO-gd \
-            -lvtkpng-gd \
-            -lvtksys-gd \
-            -lvtktiff-gd \
-            -lvtkjpeg-gd \
-            -lvtkexpat-gd \
-            -lvtkzlib-gd
+            -lvtkImaging-gd \
     } else {
     # release
     LIBS += -L"$$(VTK_DIR)" \
-            -lvtkGraphics \
-            -lQVTK \
+            -lvtkpng-7.1 \
+            -lvtksys-7.1 \
+            -lvtktiff-7.1 \
+            -lvtkjpeg-7.1 \
+            -lvtkexpat-7.1 \
+            -lvtkzlib-7.1 \
+            -lvtkGUISupportQt-7.1 \
             -lvtkCommon \
-            -lvtkFiltering \
+            -lvtkFilters \
             -lvtkRendering \
             -lvtkIO \
-            -lvtkpng \
-            -lvtksys \
-            -lvtktiff \
-            -lvtkjpeg \
-            -lvtkexpat \
-            -lvtkzlib
+            -lvtkImaging \
     }
 
 }

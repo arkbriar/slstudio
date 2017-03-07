@@ -1,7 +1,7 @@
 #include "SLCalibrationDialog.h"
 #include "ui_SLCalibrationDialog.h"
 
-#include <QtTest/QTest>
+#include <QThread>
 #include <QSettings>
 
 #include <opencv2/opencv.hpp>
@@ -146,7 +146,7 @@ void SLCalibrationDialog::on_snapButton_clicked(){
 
         // Project pattern
         projector->displayPattern(i);
-        QTest::qSleep(delay);
+        QThread::msleep(delay);
 
         // Effectuate sleep (necessary with some camera implementations)
         QApplication::processEvents();

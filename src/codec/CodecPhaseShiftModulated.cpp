@@ -18,6 +18,8 @@ static unsigned int Ncue = 3;
 
 #define USE_SINE_MODULATOR 1
 
+typedef unsigned int uint;
+
 EncoderPhaseShiftModulated::EncoderPhaseShiftModulated(unsigned int _screenCols, unsigned int _screenRows, CodecDir _dir) : Encoder(_screenCols, _screenRows, _dir){
 
     // Set N

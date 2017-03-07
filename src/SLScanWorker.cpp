@@ -2,7 +2,7 @@
 
 #include <QCoreApplication>
 #include <QSettings>
-#include <QTest>
+#include <QThread>
 #include <QTime>
 
 #include <iostream>
@@ -206,7 +206,7 @@ void SLScanWorker::doWork(){
 
             if(triggerMode == triggerModeSoftware){
                 // Wait one frame period to rotate projector frame buffer
-                QTest::qSleep(delay);
+                QThread::msleep(delay);
             } else {
                 // Wait a few milliseconds to allow camera to get ready
                // QTest::qSleep(1);

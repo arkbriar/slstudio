@@ -1,7 +1,7 @@
 #include "SLProjectorVirtual.h"
 
 #include <QTime>
-#include <QTest>
+#include <QThread>
 
 SLProjectorVirtual::SLProjectorVirtual(unsigned int){
     time = new QTime();
@@ -11,8 +11,9 @@ SLProjectorVirtual::SLProjectorVirtual(unsigned int){
 void SLProjectorVirtual::waitForProjection(){
     // Wait till 17 msec have elapsed on time
     unsigned int elapsed = time->elapsed();
-    if(elapsed < 33)
-        QTest::qSleep(33 - elapsed);
+    if(elapsed < 33) {
+        QThread::msleep(33 -elapsed);
+    }
 
     // Reset time
     time->restart();
