@@ -11,6 +11,7 @@
 #include "ProjectorLC3000.h"
 #include "ProjectorLC4500.h"
 #include "SLProjectorVirtual.h"
+#include "SLCameraVirtual.h"
 
 #include "CalibratorLocHom.h"
 #include "CalibratorRBF.h"
@@ -39,6 +40,10 @@ SLCalibrationDialog::SLCalibrationDialog(SLStudio *parent) : QDialog(parent), ui
     int iNum = settings.value("camera/interfaceNumber", 0).toInt();
     int cNum = settings.value("camera/cameraNumber", 0).toInt();
     camera = Camera::NewCamera(iNum,cNum,triggerModeSoftware);
+    // Create a virtual camera when hardware camera creation failed.
+    if (camera == nullptr) {
+        camera = new SLCameraVirtual(cNum, triggerModeSoftware);
+    }
 
     delay = settings.value("trigger/delay", "100").toInt();
 
