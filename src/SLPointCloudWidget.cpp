@@ -181,7 +181,7 @@ void SLPointCloudWidget::savePointCloud(){
 void SLPointCloudWidget::saveScreenShot(){
 
     vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
-    //filter->SetInput(visualizer->getRenderWindow());
+    filter->SetInput(visualizer->getRenderWindow());
     filter->Modified();
 
     QString fileName = QFileDialog::getSaveFileName(this, "Save Screen Shot", QString(), "*.png");
