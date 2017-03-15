@@ -68,10 +68,10 @@ CameraPointGrey::CameraPointGrey(unsigned int camNum, CameraTriggerMode triggerM
 
     // Configure Format7 mode (2x2 binning)
     FlyCapture2::Format7ImageSettings format7Settings;
-    format7Settings.mode = FlyCapture2::MODE_4;
+    format7Settings.mode = FlyCapture2::MODE_0;
     format7Settings.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO8;
-    format7Settings.width = 3376/2;
-    format7Settings.height = 2704/2;
+    format7Settings.width = 1280;
+    format7Settings.height = 1024;
     format7Settings.offsetX = 0;
     format7Settings.offsetY = 0;
 
