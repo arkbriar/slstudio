@@ -4,17 +4,20 @@
 // Note: library headers conflict with IDS imaging headers
 #include <xiApi.h>
 
-#define HandleResult(res,place) if (res!=XI_OK) {printf("CameraXIMEA: Error at %s (%d)\n",place,res); fflush(stdout);}
+#define HandleResult(res, place)                               \
+    if (res != XI_OK) {                                        \
+        printf("CameraXIMEA: Error at %s (%d)\n", place, res); \
+        fflush(stdout);                                        \
+    }
 
-std::vector<CameraInfo> CameraXIMEA::getCameraList(){
-
+std::vector<CameraInfo> CameraXIMEA::getCameraList() {
     XI_RETURN stat = XI_OK;
     DWORD numCams;
     stat = xiGetNumberDevices(&numCams);
     HandleResult(stat, "xiGetNumberDevices");
 
     std::vector<CameraInfo> ret(numCams);
-    for(unsigned int i=0; i<numCams; i++){
+    for (unsigned int i = 0; i < numCams; i++) {
         CameraInfo info;
         info.vendor = "Ximea";
         char name[20];
@@ -26,8 +29,8 @@ std::vector<CameraInfo> CameraXIMEA::getCameraList(){
     return ret;
 }
 
-CameraXIMEA::CameraXIMEA(unsigned int camNum, CameraTriggerMode triggerMode) : Camera(triggerMode), camera(NULL){
-
+CameraXIMEA::CameraXIMEA(unsigned int camNum, CameraTriggerMode triggerMode)
+    : Camera(triggerMode), camera(NULL) {
     // Set debugging level
     xiSetParamInt(0, XI_PRM_DEBUG_LEVEL, XI_DL_FATAL);
 
@@ -36,77 +39,74 @@ CameraXIMEA::CameraXIMEA(unsigned int camNum, CameraTriggerMode triggerMode) : C
 
     // Retrieve a handle to the camera device
     stat = xiOpenDevice(camNum, &camera);
-    HandleResult(stat,"xiOpenDevice");
+    HandleResult(stat, "xiOpenDevice");
 
     // Configure unsafe buffers (prevents old buffers, memory leak)
     xiSetParamInt(camera, XI_PRM_BUFFER_POLICY, XI_BP_UNSAFE);
 
-//    // Output frame signal
-//    xiSetParamInt(camera, XI_PRM_GPO_SELECTOR, 1);
-//    xiSetParamInt(camera, XI_PRM_GPO_MODE, XI_GPO_ON);
+    //    // Output frame signal
+    //    xiSetParamInt(camera, XI_PRM_GPO_SELECTOR, 1);
+    //    xiSetParamInt(camera, XI_PRM_GPO_MODE, XI_GPO_ON);
 
     // Configure buffer size
-//    stat = xiSetParamInt(camera, XI_PRM_ACQ_BUFFER_SIZE, 128*1024);
-//    HandleResult(stat,"xiSetParam (XI_PRM_ACQ_BUFFER_SIZE)");
+    //    stat = xiSetParamInt(camera, XI_PRM_ACQ_BUFFER_SIZE, 128*1024);
+    //    HandleResult(stat,"xiSetParam (XI_PRM_ACQ_BUFFER_SIZE)");
     stat = xiSetParamInt(camera, XI_PRM_BUFFERS_QUEUE_SIZE, 1);
-    HandleResult(stat,"xiSetParam (XI_PRM_BUFFERS_QUEUE_SIZE)");
+    HandleResult(stat, "xiSetParam (XI_PRM_BUFFERS_QUEUE_SIZE)");
 
     // Configure queue mode (0 = next frame in queue, 1 = most recent frame)
     stat = xiSetParamInt(camera, XI_PRM_RECENT_FRAME, 1);
-    HandleResult(stat,"xiSetParam (XI_PRM_RECENT_FRAME)");
+    HandleResult(stat, "xiSetParam (XI_PRM_RECENT_FRAME)");
 
     // Configure image type
     stat = xiSetParamInt(camera, XI_PRM_IMAGE_DATA_FORMAT, XI_MONO8);
-    HandleResult(stat,"xiSetParam (XI_PRM_IMAGE_DATA_FORMAT)");
+    HandleResult(stat, "xiSetParam (XI_PRM_IMAGE_DATA_FORMAT)");
 
     // Configure input pin 1 as trigger input
     xiSetParamInt(camera, XI_PRM_GPI_SELECTOR, 1);
     stat = xiSetParamInt(camera, XI_PRM_GPI_MODE, XI_GPI_TRIGGER);
-    HandleResult(stat,"xiSetParam (XI_PRM_GPI_MODE)");
+    HandleResult(stat, "xiSetParam (XI_PRM_GPI_MODE)");
 
-//    // Configure frame rate
-//    stat = xiSetParamFloat(camera, XI_PRM_FRAMERATE, 10);
-//    HandleResult(stat,"xiSetParam (XI_PRM_FRAMERATE)");
+    //    // Configure frame rate
+    //    stat = xiSetParamFloat(camera, XI_PRM_FRAMERATE, 10);
+    //    HandleResult(stat,"xiSetParam (XI_PRM_FRAMERATE)");
 
-//    // Downsample to half size
-//    stat = xiSetParamInt(camera, XI_PRM_DOWNSAMPLING_TYPE, XI_BINNING);
-//    HandleResult(stat,"xiSetParam (XI_PRM_DOWNSAMPLING_TYPE)");
-//    stat = xiSetParamInt(camera, XI_PRM_DOWNSAMPLING, 2);
-//    HandleResult(stat,"xiSetParam (XI_PRM_DOWNSAMPLING)");
+    //    // Downsample to half size
+    //    stat = xiSetParamInt(camera, XI_PRM_DOWNSAMPLING_TYPE, XI_BINNING);
+    //    HandleResult(stat,"xiSetParam (XI_PRM_DOWNSAMPLING_TYPE)");
+    //    stat = xiSetParamInt(camera, XI_PRM_DOWNSAMPLING, 2);
+    //    HandleResult(stat,"xiSetParam (XI_PRM_DOWNSAMPLING)");
 
     // Define ROI
     stat = xiSetParamInt(camera, XI_PRM_WIDTH, 640);
-    HandleResult(stat,"xiSetParam (XI_PRM_WIDTH)");
+    HandleResult(stat, "xiSetParam (XI_PRM_WIDTH)");
     stat = xiSetParamInt(camera, XI_PRM_HEIGHT, 512);
-    HandleResult(stat,"xiSetParam (XI_PRM_HEIGHT)");
+    HandleResult(stat, "xiSetParam (XI_PRM_HEIGHT)");
     stat = xiSetParamInt(camera, XI_PRM_OFFSET_X, 0);
-    HandleResult(stat,"xiSetParam (XI_PRM_OFFSET_X)");
+    HandleResult(stat, "xiSetParam (XI_PRM_OFFSET_X)");
     stat = xiSetParamInt(camera, XI_PRM_OFFSET_Y, 0);
-    HandleResult(stat,"xiSetParam (XI_PRM_OFFSET_Y)");
+    HandleResult(stat, "xiSetParam (XI_PRM_OFFSET_Y)");
 
     // Setting reasonable default settings
     xiSetParamFloat(camera, XI_PRM_GAMMAY, 1.0);
-    xiSetParamInt(camera, XI_PRM_EXPOSURE, 16666); //us
+    xiSetParamInt(camera, XI_PRM_EXPOSURE, 16666);  // us
     xiSetParamFloat(camera, XI_PRM_GAIN, 0);
-
 }
 
-CameraSettings CameraXIMEA::getCameraSettings(){
-
+CameraSettings CameraXIMEA::getCameraSettings() {
     CameraSettings settings;
 
     int shutter;
     xiGetParamInt(camera, XI_PRM_EXPOSURE, &shutter);
-    settings.shutter = shutter/1000.0; // from us to ms
+    settings.shutter = shutter / 1000.0;  // from us to ms
     xiGetParamFloat(camera, XI_PRM_GAIN, &settings.gain);
 
     return settings;
 }
 
-void CameraXIMEA::setCameraSettings(CameraSettings settings){
-
+void CameraXIMEA::setCameraSettings(CameraSettings settings) {
     // Set shutter (in us)
-    xiSetParamInt(camera, XI_PRM_EXPOSURE, settings.shutter*1000);
+    xiSetParamInt(camera, XI_PRM_EXPOSURE, settings.shutter * 1000);
     // Set gain (in dB)
     xiSetParamFloat(camera, XI_PRM_GAIN, settings.gain);
 
@@ -115,60 +115,54 @@ void CameraXIMEA::setCameraSettings(CameraSettings settings){
               << "Gain: " << settings.gain << " dB" << std::endl;
 }
 
-void CameraXIMEA::startCapture(){
-
-    if(triggerMode == triggerModeHardware){
+void CameraXIMEA::startCapture() {
+    if (triggerMode == triggerModeHardware) {
         // Configure for hardware trigger
         stat = xiSetParamInt(camera, XI_PRM_TRG_SOURCE, XI_TRG_OFF);
-        HandleResult(stat,"xiSetParam (XI_PRM_TRG_SOURCE)");
-    } else if(triggerMode == triggerModeSoftware){
+        HandleResult(stat, "xiSetParam (XI_PRM_TRG_SOURCE)");
+    } else if (triggerMode == triggerModeSoftware) {
         // Configure for software trigger (for getSingleFrame())
         stat = xiSetParamInt(camera, XI_PRM_TRG_SOURCE, XI_TRG_SOFTWARE);
-        HandleResult(stat,"xiSetParam (XI_PRM_TRG_SOURCE)");
+        HandleResult(stat, "xiSetParam (XI_PRM_TRG_SOURCE)");
     }
 
     // Start aquistion
     stat = xiStartAcquisition(camera);
-    HandleResult(stat,"xiStartAcquisition");
+    HandleResult(stat, "xiStartAcquisition");
 
     capturing = true;
-
 }
 
-void CameraXIMEA::stopCapture(){
-
-    if(!capturing){
+void CameraXIMEA::stopCapture() {
+    if (!capturing) {
         std::cerr << "CameraXIMEA: not capturing!" << std::endl;
         return;
     }
-
 }
 
-CameraFrame CameraXIMEA::getFrame(){
-
+CameraFrame CameraXIMEA::getFrame() {
     // Create single image buffer
     XI_IMG image;
-    image.size = SIZE_XI_IMG_V2; // must be initialized
+    image.size = SIZE_XI_IMG_V2;  // must be initialized
     image.bp = NULL;
     image.bp_size = 0;
 
-    if(triggerMode == triggerModeSoftware){
+    if (triggerMode == triggerModeSoftware) {
         // Fire software trigger
         stat = xiSetParamInt(camera, XI_PRM_TRG_SOFTWARE, 0);
-        HandleResult(stat,"xiSetParam (XI_PRM_TRG_SOFTWARE)");
+        HandleResult(stat, "xiSetParam (XI_PRM_TRG_SOFTWARE)");
 
         // Retrieve image from camera
         stat = xiGetImage(camera, 1000, &image);
-        HandleResult(stat,"xiGetImage");
+        HandleResult(stat, "xiGetImage");
     } else {
-
         // Retrieve image from camera
         stat = xiGetImage(camera, 50, &image);
-        HandleResult(stat,"xiGetImage");
+        HandleResult(stat, "xiGetImage");
     }
 
     // Empty buffer
-    while(xiGetImage(camera, 1, &image) == XI_OK){
+    while (xiGetImage(camera, 1, &image) == XI_OK) {
         std::cerr << "drop!" << std::endl;
         continue;
     }
@@ -183,35 +177,29 @@ CameraFrame CameraXIMEA::getFrame(){
     return frame;
 }
 
+size_t CameraXIMEA::getFrameSizeBytes() { return 0; }
 
-size_t CameraXIMEA::getFrameSizeBytes(){
-    return 0;
-}
-
-size_t CameraXIMEA::getFrameWidth(){
+size_t CameraXIMEA::getFrameWidth() {
     int w;
     xiGetParamInt(camera, XI_PRM_WIDTH, &w);
 
     return w;
 }
 
-size_t CameraXIMEA::getFrameHeight(){
+size_t CameraXIMEA::getFrameHeight() {
     int h;
     xiGetParamInt(camera, XI_PRM_HEIGHT, &h);
 
     return h;
 }
 
-CameraXIMEA::~CameraXIMEA(){
-
-    if(capturing){
+CameraXIMEA::~CameraXIMEA() {
+    if (capturing) {
         // Stop acquisition
         stat = xiStopAcquisition(camera);
-        HandleResult(stat,"xiStopAcquisition");
+        HandleResult(stat, "xiStopAcquisition");
     }
 
     // Close device
     xiCloseDevice(camera);
 }
-
-

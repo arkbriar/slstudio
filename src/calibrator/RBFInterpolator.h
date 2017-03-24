@@ -9,18 +9,21 @@
 
 #include <opencv2/opencv.hpp>
 
-enum tRBF {RBF_GAUSSIAN};
+enum tRBF { RBF_GAUSSIAN };
 
-class RBFInterpolator{
-    public:
-        RBFInterpolator(tRBF _type = RBF_GAUSSIAN, float _regularizationK = 0.0) : type(_type), regularizationK(_regularizationK){}
-        RBFInterpolator(std::vector<cv::Point2f> dataPoints, tRBF = RBF_GAUSSIAN, float _regularizationK = 0.0);
-        void setDataPoints(const std::vector<cv::Point2f> x, const std::vector<cv::Point2f> f);
-        cv::Point2f interpolate(const std::vector<cv::Point2f> x, const cv::Point2f xStar);
-    private:
-        tRBF type;
-        float regularizationK;
-        cv::Mat_<float> lambda;
+class RBFInterpolator {
+   public:
+    RBFInterpolator(tRBF _type = RBF_GAUSSIAN, float _regularizationK = 0.0)
+        : type(_type), regularizationK(_regularizationK) {}
+    RBFInterpolator(std::vector<cv::Point2f> dataPoints, tRBF = RBF_GAUSSIAN,
+                    float _regularizationK = 0.0);
+    void setDataPoints(const std::vector<cv::Point2f> x, const std::vector<cv::Point2f> f);
+    cv::Point2f interpolate(const std::vector<cv::Point2f> x, const cv::Point2f xStar);
+
+   private:
+    tRBF type;
+    float regularizationK;
+    cv::Mat_<float> lambda;
 };
 
-#endif // RBFINTERPOLATOR_H
+#endif  // RBFINTERPOLATOR_H

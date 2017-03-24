@@ -5,8 +5,4 @@
 #include "Reconstructor.h"
 #include "Reconstructor.h"
 
-int main(int argc, char** argv){
-
-
-
-}
+int main(int argc, char** argv) {}

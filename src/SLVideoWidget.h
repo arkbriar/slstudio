@@ -16,18 +16,18 @@
 
 class SLVideoWidget : public QLabel {
     Q_OBJECT
-    public:
-        explicit SLVideoWidget(QWidget *parent = 0) : QLabel(parent){}
-    signals:
+   public:
+    explicit SLVideoWidget(QWidget *parent = 0) : QLabel(parent) {}
+   signals:
 
-    public slots:
-        void showFrame(CameraFrame frame);
-        void showFrameCV(cv::Mat frame);
-        void resizeEvent(QResizeEvent *event);
-    protected:
+   public slots:
+    void showFrame(CameraFrame frame);
+    void showFrameCV(cv::Mat frame);
+    void resizeEvent(QResizeEvent *event);
 
-    private:
-        QPixmap pixmap;
+   protected:
+   private:
+    QPixmap pixmap;
 };
 
 #endif

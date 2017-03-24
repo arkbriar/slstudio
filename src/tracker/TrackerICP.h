@@ -22,35 +22,39 @@
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 
 class TrackerICP : public Tracker {
-    public:
-        TrackerICP();
-        void setReference(PointCloudConstPtr refPointCloud);
-        void determineTransformation(PointCloudConstPtr pointCloud, Eigen::Affine3f &T, bool &converged, float &RMS);
-        ~TrackerICP();
-        void setCameraMatrix(Eigen::Matrix3f _cameraMatrix);
-    private:
+   public:
+    TrackerICP();
+    void setReference(PointCloudConstPtr refPointCloud);
+    void determineTransformation(PointCloudConstPtr pointCloud, Eigen::Affine3f &T, bool &converged,
+                                 float &RMS);
+    ~TrackerICP();
+    void setCameraMatrix(Eigen::Matrix3f _cameraMatrix);
 
-        pcl::IterativeClosestPoint<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> *icp;
+   private:
+    pcl::IterativeClosestPoint<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> *icp;
 
-        pcl::ApproximateVoxelGrid<pcl::PointXYZRGB>::Ptr approximateVoxelFilter;
+    pcl::ApproximateVoxelGrid<pcl::PointXYZRGB>::Ptr approximateVoxelFilter;
 
-        //CorrEstKdTreeFast<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>::Ptr correspondenceEstimator;
-        CorrEstOrgProjFast<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>::Ptr correspondenceEstimator;
+    // CorrEstKdTreeFast<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>::Ptr
+    // correspondenceEstimator;
+    CorrEstOrgProjFast<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>::Ptr correspondenceEstimator;
 
-        CorrRejectOrgBoundFast::Ptr correspondenceRejectorBoundary;
-        pcl::registration::CorrespondenceRejectorMedianDistance::Ptr correspondenceRejectorMedian;
-        pcl::registration::CorrespondenceRejectorVarTrimmed::Ptr correspondenceRejectorVar;
+    CorrRejectOrgBoundFast::Ptr correspondenceRejectorBoundary;
+    pcl::registration::CorrespondenceRejectorMedianDistance::Ptr correspondenceRejectorMedian;
+    pcl::registration::CorrespondenceRejectorVarTrimmed::Ptr correspondenceRejectorVar;
 
-        //pcl::registration::TransformationEstimationSVD<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>::Ptr transformationEstimator;
-        pcl::registration::TransformationEstimationPointToPlaneLLS<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>::Ptr transformationEstimator;
-        //pcl::registration::TransformationEstimationPointToPlaneLLS<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>::Ptr transformationEstimator;
+    // pcl::registration::TransformationEstimationSVD<pcl::PointXYZRGBNormal,
+    // pcl::PointXYZRGBNormal>::Ptr transformationEstimator;
+    pcl::registration::TransformationEstimationPointToPlaneLLS<
+        pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>::Ptr transformationEstimator;
+    // pcl::registration::TransformationEstimationPointToPlaneLLS<pcl::PointXYZRGBNormal,
+    // pcl::PointXYZRGBNormal>::Ptr transformationEstimator;
 
-        Eigen::Affine3f lastTransformation;
+    Eigen::Affine3f lastTransformation;
 
-        pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr refPointCloudNormals;
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr refPointCloudNormals;
 
-        PoseFilter *poseFilter;
-
+    PoseFilter *poseFilter;
 };
 
-#endif // TRACKER_H
+#endif  // TRACKER_H

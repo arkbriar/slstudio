@@ -14,8 +14,7 @@
 #include "CodecFastRatio.h"
 #include "CodecGrayCode.h"
 
-std::vector<CameraInfo> SLCameraVirtual::getCameraList(){
-
+std::vector<CameraInfo> SLCameraVirtual::getCameraList() {
     CameraInfo info;
     info.vendor = "SLStudio";
     info.model = "Virtual Camera";
@@ -27,68 +26,60 @@ std::vector<CameraInfo> SLCameraVirtual::getCameraList(){
     return ret;
 }
 
-SLCameraVirtual::SLCameraVirtual(unsigned int, CameraTriggerMode triggerMode): Camera(triggerMode), frameWidth(640), frameHeight(512), counter(0){
-
+SLCameraVirtual::SLCameraVirtual(unsigned int, CameraTriggerMode triggerMode)
+    : Camera(triggerMode), frameWidth(640), frameHeight(512), counter(0) {
     QSettings settings("SLStudio");
 
     CodecDir dir = (CodecDir)settings.value("pattern/direction", CodecDirHorizontal).toInt();
-    if(dir == CodecDirNone)
-        std::cerr << "SLCameraVirtual: invalid coding direction " << std::endl;
+    if (dir == CodecDirNone) std::cerr << "SLCameraVirtual: invalid coding direction " << std::endl;
 
     QString patternMode = settings.value("pattern/mode", "CodecPhaseShift3").toString();
-    if(patternMode == "CodecPhaseShift3")
+    if (patternMode == "CodecPhaseShift3")
         encoder = new EncoderPhaseShift3(frameWidth, frameHeight, dir);
-    else if(patternMode == "CodecPhaseShift4")
+    else if (patternMode == "CodecPhaseShift4")
         encoder = new EncoderPhaseShift4(frameWidth, frameHeight, dir);
-    else if(patternMode == "CodecPhaseShift2x3")
+    else if (patternMode == "CodecPhaseShift2x3")
         encoder = new EncoderPhaseShift2x3(frameWidth, frameHeight, dir);
-    else if(patternMode == "CodecPhaseShift3Unwrap")
+    else if (patternMode == "CodecPhaseShift3Unwrap")
         encoder = new EncoderPhaseShift3Unwrap(frameWidth, frameHeight, dir);
-    else if(patternMode == "CodecPhaseShiftNStep")
+    else if (patternMode == "CodecPhaseShiftNStep")
         encoder = new EncoderPhaseShiftNStep(frameWidth, frameHeight, dir);
-    else if(patternMode == "CodecPhaseShift3FastWrap")
+    else if (patternMode == "CodecPhaseShift3FastWrap")
         encoder = new EncoderPhaseShift3FastWrap(frameWidth, frameHeight, dir);
-    else if(patternMode == "CodecPhaseShift2p1")
+    else if (patternMode == "CodecPhaseShift2p1")
         encoder = new EncoderPhaseShift2p1(frameWidth, frameHeight, dir);
-    else if(patternMode == "CodecFastRatio")
+    else if (patternMode == "CodecFastRatio")
         encoder = new EncoderFastRatio(frameWidth, frameHeight, dir);
-    else if(patternMode == "CodecGrayCode")
+    else if (patternMode == "CodecGrayCode")
         encoder = new EncoderGrayCode(frameWidth, frameHeight, dir);
     else
-        std::cerr << "SLScanWorker: invalid pattern mode " << patternMode.toStdString() << std::endl;
-
+        std::cerr << "SLScanWorker: invalid pattern mode " << patternMode.toStdString()
+                  << std::endl;
 
     currentBuffer.create(frameHeight, frameWidth, CV_8U);
 
     std::cout << "SLCameraVirtual: Virtual Camera Started" << std::endl;
 }
 
-CameraSettings SLCameraVirtual::getCameraSettings(){
-
+CameraSettings SLCameraVirtual::getCameraSettings() {
     CameraSettings settings;
 
     settings.shutter = 0.0;
     settings.gain = 0.0;
 
     return settings;
-
 }
 
-void SLCameraVirtual::startCapture(){
-    capturing = true;
-}
+void SLCameraVirtual::startCapture() { capturing = true; }
 
-void SLCameraVirtual::stopCapture(){
-
-    if(!capturing){
+void SLCameraVirtual::stopCapture() {
+    if (!capturing) {
         std::cerr << "SLCameraVirtual: not capturing!" << std::endl;
         return;
     }
 }
 
-
-CameraFrame SLCameraVirtual::getFrame(){
-
+CameraFrame SLCameraVirtual::getFrame() {
     unsigned int depth = counter % encoder->getNPatterns();
     cv::Mat patternCV = encoder->getEncodingPattern(depth);
 
@@ -99,7 +90,8 @@ CameraFrame SLCameraVirtual::getFrame(){
 
     // general repmat
     cv::Mat frameCV;
-    frameCV = cv::repeat(patternCV, (frameHeight+patternCV.rows-1)/patternCV.rows, (frameWidth+patternCV.cols-1)/patternCV.cols);
+    frameCV = cv::repeat(patternCV, (frameHeight + patternCV.rows - 1) / patternCV.rows,
+                         (frameWidth + patternCV.cols - 1) / patternCV.cols);
     frameCV = frameCV(cv::Range(0, frameHeight), cv::Range(0, frameWidth));
     frameCV = frameCV.clone();
 
@@ -111,7 +103,7 @@ CameraFrame SLCameraVirtual::getFrame(){
     frameCV.convertTo(currentBuffer, CV_8U);
     counter++;
 
- //cv::imwrite("frameCV.png", frameCV);
+    // cv::imwrite("frameCV.png", frameCV);
 
     // return as CameraFrame struct
     CameraFrame frame;
@@ -119,30 +111,15 @@ CameraFrame SLCameraVirtual::getFrame(){
     frame.width = currentBuffer.cols;
     frame.memory = currentBuffer.data;
     frame.timeStamp = counter;
-    frame.sizeBytes = currentBuffer.rows*currentBuffer.cols;
+    frame.sizeBytes = currentBuffer.rows * currentBuffer.cols;
 
     return frame;
 }
 
+size_t SLCameraVirtual::getFrameSizeBytes() { return frameWidth * frameHeight; }
 
-size_t SLCameraVirtual::getFrameSizeBytes(){
+size_t SLCameraVirtual::getFrameWidth() { return frameWidth; }
 
-    return frameWidth*frameHeight;
-}
+size_t SLCameraVirtual::getFrameHeight() { return frameHeight; }
 
-size_t SLCameraVirtual::getFrameWidth(){
-    return frameWidth;
-}
-
-size_t SLCameraVirtual::getFrameHeight(){
-    return frameHeight;
-}
-
-
-SLCameraVirtual::~SLCameraVirtual(){
-    delete encoder;
-}
-
-
-
-
+SLCameraVirtual::~SLCameraVirtual() { delete encoder; }

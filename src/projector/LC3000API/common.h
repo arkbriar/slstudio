@@ -27,8 +27,8 @@
 extern "C" {
 #endif
 
-#define TRUE                    1
-#define FALSE                   0
+#define TRUE 1
+#define FALSE 0
 
 typedef int BOOL;
 typedef unsigned uint32;
@@ -38,6 +38,5 @@ typedef unsigned short uint16;
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif /* COMMON_H_ */

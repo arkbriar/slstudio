@@ -24,19 +24,16 @@
 extern "C" {
 #endif
 
-#define TRUE                    1
-#define FALSE                   0
+#define TRUE 1
+#define FALSE 0
 
-
-    int TCP_Connect(char *host, unsigned long int  port);
-    int TCP_Send(int sock,  unsigned char *buffer, int length);
-    int TCP_Receive(int sock, unsigned char *buffer, int length);
-    int TCP_Disconnect(int sock);
+int TCP_Connect(char *host, unsigned long int port);
+int TCP_Send(int sock, unsigned char *buffer, int length);
+int TCP_Receive(int sock, unsigned char *buffer, int length);
+int TCP_Disconnect(int sock);
 
 #ifdef __cplusplus
 }
 #endif
 
-
 #endif /* TCP_CLIENT_H_ */
-

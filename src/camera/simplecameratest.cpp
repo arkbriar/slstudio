@@ -3,10 +3,9 @@
 
 using namespace std;
 
-int main(int argc, char *argv[]){
-
+int main(int argc, char* argv[]) {
     // Init Camera
-    HIDS camera = (HIDS) 0 + 1;
+    HIDS camera = (HIDS)0 + 1;
     is_InitCamera(&camera, NULL);
 
     // Error reporting
@@ -22,7 +21,8 @@ int main(int argc, char *argv[]){
     IS_RECT rectAOI;
     is_AOI(camera, IS_AOI_IMAGE_GET_AOI, (void*)&rectAOI, sizeof(rectAOI));
     // Decrease AOI a little to improve readout speed
-    rectAOI.s32X = 6; rectAOI.s32Width -= 12;
+    rectAOI.s32X = 6;
+    rectAOI.s32Width -= 12;
     is_AOI(camera, IS_AOI_IMAGE_SET_AOI, (void*)&rectAOI, sizeof(rectAOI));
     unsigned int frameWidth = rectAOI.s32Width;
     unsigned int frameHeight = rectAOI.s32Height;
@@ -31,27 +31,29 @@ int main(int argc, char *argv[]){
     is_SetColorMode(camera, IS_CM_MONO8);
     int bitsPerPixel = 8;
 
-    char* frameMemory[10]; // 10 char pointers
+    char* frameMemory[10];  // 10 char pointers
     int memoryID[10];
 
     // Memory initialization
     is_ClearSequence(camera);
-    for(unsigned int i=0; i<10; i++){
-        is_AllocImageMem(camera, frameWidth, frameHeight, bitsPerPixel, &frameMemory[i], &memoryID[i]);
+    for (unsigned int i = 0; i < 10; i++) {
+        is_AllocImageMem(camera, frameWidth, frameHeight, bitsPerPixel, &frameMemory[i],
+                         &memoryID[i]);
         is_AddToSequence(camera, frameMemory[i], memoryID[i]);
     }
     // Configure FIFO queue
-//    is_InitImageQueue(camera, 0);
+    //    is_InitImageQueue(camera, 0);
 
-//        // Single frame memory
-//        is_AllocImageMem(camera, frameWidth, frameHeight, bitsPerPixel, &currentFrameMemory, &currentFrameID);
-//        is_SetImageMem(camera, currentFrameMemory, currentFrameID);
+    //        // Single frame memory
+    //        is_AllocImageMem(camera, frameWidth, frameHeight, bitsPerPixel, &currentFrameMemory,
+    //        &currentFrameID); is_SetImageMem(camera, currentFrameMemory, currentFrameID);
 
     // Set max available pixel clock
     unsigned int pixelClockRange[3];
-    is_PixelClock(camera, IS_PIXELCLOCK_CMD_GET_RANGE, (void*)pixelClockRange, sizeof(pixelClockRange));
+    is_PixelClock(camera, IS_PIXELCLOCK_CMD_GET_RANGE, (void*)pixelClockRange,
+                  sizeof(pixelClockRange));
     unsigned int nMax = pixelClockRange[1];
-    is_PixelClock(camera, IS_PIXELCLOCK_CMD_SET,(void*)&nMax, sizeof(nMax));
+    is_PixelClock(camera, IS_PIXELCLOCK_CMD_SET, (void*)&nMax, sizeof(nMax));
 
     // Set low framerate to enable long exposure setting.
     // Note: framerate setting has no other effect in trigger mode.
@@ -59,8 +61,9 @@ int main(int argc, char *argv[]){
 
     //    // Use global shutter
     //    is_SetGlobalShutter(camera, IS_SET_GLOBAL_SHUTTER_ON);
-//    int shutterMode = IS_DEVICE_FEATURE_CAP_SHUTTER_MODE_GLOBAL;
-//    is_DeviceFeature(camera, IS_DEVICE_FEATURE_CMD_SET_SHUTTER_MODE, (void*)&shutterMode, sizeof(shutterMode));
+    //    int shutterMode = IS_DEVICE_FEATURE_CAP_SHUTTER_MODE_GLOBAL;
+    //    is_DeviceFeature(camera, IS_DEVICE_FEATURE_CMD_SET_SHUTTER_MODE, (void*)&shutterMode,
+    //    sizeof(shutterMode));
 
     // Enable gain boost
     is_SetGainBoost(camera, IS_SET_GAINBOOST_ON);
@@ -73,14 +76,17 @@ int main(int argc, char *argv[]){
     double shutter;
     is_Exposure(camera, IS_EXPOSURE_CMD_GET_EXPOSURE, &shutter, sizeof(shutter));
     cout << "Shutter: " << shutter << " ms" << endl;
-    cout << "Gamma: " << (float)is_SetGamma(camera, IS_GET_GAMMA)/100.0 << endl;
-    cout << "Gain: " << is_SetHardwareGain(camera, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) << " %" << endl;
+    cout << "Gamma: " << (float)is_SetGamma(camera, IS_GET_GAMMA) / 100.0 << endl;
+    cout << "Gain: "
+         << is_SetHardwareGain(camera, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER,
+                               IS_IGNORE_PARAMETER)
+         << " %" << endl;
 
     // Configure for hardware triggered mode
     is_SetExternalTrigger(camera, IS_SET_TRIGGER_OFF);
 
     // Timeout for marking a trigger event as failed
-    //is_SetTimeout(camera, IS_TRIGGER_TIMEOUT, 10000);
+    // is_SetTimeout(camera, IS_TRIGGER_TIMEOUT, 10000);
 
     // Begin transmission
     is_CaptureVideo(camera, IS_DONT_WAIT);
@@ -90,8 +96,8 @@ int main(int argc, char *argv[]){
     // Capture a couple of frames
     char* currentFrameMemory;
     int currentFrameID;
-    for(unsigned int i=0; i<100; i++){
-//        is_WaitForNextImage(camera, 10000, &currentFrameMemory, &currentFrameID);
+    for (unsigned int i = 0; i < 100; i++) {
+        //        is_WaitForNextImage(camera, 10000, &currentFrameMemory, &currentFrameID);
         is_WaitEvent(camera, IS_SET_EVENT_FRAME, 1000);
         is_GetActSeqBuf(camera, NULL, NULL, &currentFrameMemory);
         is_LockSeqBuf(camera, IS_IGNORE_PARAMETER, currentFrameMemory);
@@ -101,20 +107,17 @@ int main(int argc, char *argv[]){
 
     is_StopLiveVideo(camera, IS_WAIT);
 
-//        is_ExitImageQueue(camera);
-//    // Gracefully close the camera
-//    is_ClearSequence(camera);
+    //        is_ExitImageQueue(camera);
+    //    // Gracefully close the camera
+    //    is_ClearSequence(camera);
 
-//    unsigned int ringBufferSize = 10;
-//    for(unsigned int i=0; i<ringBufferSize; i++){
-//        is_FreeImageMem(camera, frameMemory[i], memoryID[i]);
-//    }
+    //    unsigned int ringBufferSize = 10;
+    //    for(unsigned int i=0; i<ringBufferSize; i++){
+    //        is_FreeImageMem(camera, frameMemory[i], memoryID[i]);
+    //    }
 
     // Exit and free memories
     is_ExitCamera(camera);
 
     return 0;
 }
-
-
-

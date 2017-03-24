@@ -3,28 +3,26 @@
 #include "Camera.h"
 #include <QApplication>
 
-void SLCameraWorker::setup(unsigned iNum, unsigned cNum){
-
+void SLCameraWorker::setup(unsigned iNum, unsigned cNum) {
     // Initialize camera
     camera = Camera::NewCamera(iNum, cNum);
 
     unsigned int frameWidth, frameHeight;
     camera->getFrameWidthHeight(&frameWidth, &frameHeight);
 
-    std::cout << "SLCameraWorker: opened camera " << frameWidth << " x " << frameHeight << std::endl << std::flush;
+    std::cout << "SLCameraWorker: opened camera " << frameWidth << " x " << frameHeight << std::endl
+              << std::flush;
 }
 
-void SLCameraWorker::doWork(){
-
+void SLCameraWorker::doWork() {
     _isWorking = true;
 
     camera->startCapture();
 
-    while(_isWorking){
-
+    while (_isWorking) {
         std::vector<cv::Mat> frameSeq;
 
-        for(unsigned int i=0; i<3; i++){
+        for (unsigned int i = 0; i < 3; i++) {
             // Run camera in continous mode
             CameraFrame frame = camera->lockFrame();
             cv::Mat frameCV(frame.height, frame.width, CV_8U, frame.memory);
@@ -45,6 +43,4 @@ void SLCameraWorker::doWork(){
     emit finished();
 }
 
-SLCameraWorker::~SLCameraWorker(){
-    delete camera;
-}
+SLCameraWorker::~SLCameraWorker() { delete camera; }

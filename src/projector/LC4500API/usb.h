@@ -6,7 +6,7 @@
  * Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com/
  * ALL RIGHTS RESERVED
  *
-*/
+ */
 
 #ifndef USB_H
 #define USB_H
@@ -25,4 +25,4 @@ int USB_Close();
 int USB_Init();
 int USB_Exit();
 
-#endif //USB_H
+#endif  // USB_H

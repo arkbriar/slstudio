@@ -11,31 +11,31 @@
 #include <QDialog>
 
 namespace Ui {
-    class SLPreferenceDialog;
+class SLPreferenceDialog;
 }
 
-class SLPreferenceDialog : public QDialog{
+class SLPreferenceDialog : public QDialog {
     Q_OBJECT
-    
-    public:
-        explicit SLPreferenceDialog(QWidget *parent = 0);
-        ~SLPreferenceDialog();
 
-    private slots:
-        void on_buttonBox_accepted();
+   public:
+    explicit SLPreferenceDialog(QWidget *parent = 0);
+    ~SLPreferenceDialog();
 
-        void on_triggerHardwareRadioButton_clicked();
+   private slots:
+    void on_buttonBox_accepted();
 
-        void on_triggerSoftwareRadioButton_clicked();
+    void on_triggerHardwareRadioButton_clicked();
 
-        void on_cameraComboBox_currentIndexChanged(const QString &arg1);
+    void on_triggerSoftwareRadioButton_clicked();
 
-        void on_patternHorizontalCheckBox_clicked();
+    void on_cameraComboBox_currentIndexChanged(const QString &arg1);
 
-        void on_patternVerticalCheckBox_clicked();
+    void on_patternHorizontalCheckBox_clicked();
 
-private:
-        Ui::SLPreferenceDialog *ui;
+    void on_patternVerticalCheckBox_clicked();
+
+   private:
+    Ui::SLPreferenceDialog *ui;
 };
 
-#endif // SLPREFERENCEDIALOG_H
+#endif  // SLPREFERENCEDIALOG_H

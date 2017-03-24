@@ -13,42 +13,41 @@
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
 
-int main(){
-
+int main() {
 #if 1
     // Construct artificial point clouds
-    PointCloudPtr source(new pcl::PointCloud<pcl::PointXYZRGB>(480,640));
-    for(unsigned int i=0; i<480; i++){
-        for(unsigned int j=0; j<640; j++){
-            float z = 200.0*sin(i/120.0)*cos(j/120.0) + 1000.0;
-            source->at(i,j).x = i*z/1000.0;
-            source->at(i,j).y = j*z/1000.0;
-            source->at(i,j).z = z;
-            source->at(i,j).r = source->at(i,j).g = source->at(i,j).b = 100;
+    PointCloudPtr source(new pcl::PointCloud<pcl::PointXYZRGB>(480, 640));
+    for (unsigned int i = 0; i < 480; i++) {
+        for (unsigned int j = 0; j < 640; j++) {
+            float z = 200.0 * sin(i / 120.0) * cos(j / 120.0) + 1000.0;
+            source->at(i, j).x = i * z / 1000.0;
+            source->at(i, j).y = j * z / 1000.0;
+            source->at(i, j).z = z;
+            source->at(i, j).r = source->at(i, j).g = source->at(i, j).b = 100;
         }
     }
 
     // Construct known transformation
     PointCloudPtr target(new pcl::PointCloud<pcl::PointXYZRGB>(*source));
     Eigen::Affine3f T = Eigen::Affine3f::Identity();
-    T.translate(Eigen::Vector3f(0.2,-1.1,8.0));
-    T.rotate(Eigen::AngleAxisf(0.02*M_PI, Eigen::Vector3f::UnitX()));
-    T.rotate(Eigen::AngleAxisf(0.02*M_PI, Eigen::Vector3f::UnitY()));
-    T.rotate(Eigen::AngleAxisf(0.02*M_PI, Eigen::Vector3f::UnitZ()));
+    T.translate(Eigen::Vector3f(0.2, -1.1, 8.0));
+    T.rotate(Eigen::AngleAxisf(0.02 * M_PI, Eigen::Vector3f::UnitX()));
+    T.rotate(Eigen::AngleAxisf(0.02 * M_PI, Eigen::Vector3f::UnitY()));
+    T.rotate(Eigen::AngleAxisf(0.02 * M_PI, Eigen::Vector3f::UnitZ()));
     // Apply to source
     pcl::transformPointCloud(*source, *target, T);
 
     // Add independent noise to point clouds
     boost::normal_distribution<> nd(0.0, 1);
     boost::mt19937 rng;
-    boost::variate_generator< boost::mt19937&, boost::normal_distribution<> > noise(rng, nd);
-    for (size_t i = 0; i < source->points.size(); i++){
-        //source->points[i].x += noise();
-        //source->points[i].y += noise();
+    boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > noise(rng, nd);
+    for (size_t i = 0; i < source->points.size(); i++) {
+        // source->points[i].x += noise();
+        // source->points[i].y += noise();
         source->points[i].z += noise();
 
-        //target->points[i].x += noise();
-        //target->points[i].y += noise();
+        // target->points[i].x += noise();
+        // target->points[i].y += noise();
         target->points[i].z += noise();
     }
 
@@ -57,14 +56,14 @@ int main(){
     // Make partial overlap
     source->is_dense = false;
     target->is_dense = false;
-    for(unsigned int i=0; i<480; i++){
-        for(unsigned int j=0; j<50; j++){
-            source->at(i,j).x = NAN;
-            source->at(i,j).y = NAN;
-            source->at(i,j).z = NAN;
-            target->at(i,639-j).x = NAN;
-            target->at(i,639-j).y = NAN;
-            target->at(i,639-j).z = NAN;
+    for (unsigned int i = 0; i < 480; i++) {
+        for (unsigned int j = 0; j < 50; j++) {
+            source->at(i, j).x = NAN;
+            source->at(i, j).y = NAN;
+            source->at(i, j).z = NAN;
+            target->at(i, 639 - j).x = NAN;
+            target->at(i, 639 - j).y = NAN;
+            target->at(i, 639 - j).z = NAN;
         }
     }
 
@@ -72,8 +71,8 @@ int main(){
     pcl::io::savePCDFileBinary("target.pcd", *target);
 
     Eigen::Matrix3f Kc = Eigen::Matrix3f::Identity();
-    Kc(0,0) = 1000;
-    Kc(1,1) = 1000;
+    Kc(0, 0) = 1000;
+    Kc(1, 1) = 1000;
 
 #else
 
@@ -107,10 +106,9 @@ int main(){
     std::cout << "Time: " << time.elapsed() << " ms" << std::endl;
     std::cout << "Test: " << std::endl << Test.matrix() << std::endl;
 
-    PointCloudPtr result(new pcl::PointCloud<pcl::PointXYZRGB>(480,640));
+    PointCloudPtr result(new pcl::PointCloud<pcl::PointXYZRGB>(480, 640));
     pcl::transformPointCloud(*source, *result, Test);
 
     // Save resulting point cloud
     pcl::io::savePCDFileBinary("result.pcd", *result);
-
 }

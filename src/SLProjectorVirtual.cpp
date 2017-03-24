@@ -3,43 +3,35 @@
 #include <QTime>
 #include <QThread>
 
-SLProjectorVirtual::SLProjectorVirtual(unsigned int){
+SLProjectorVirtual::SLProjectorVirtual(unsigned int) {
     time = new QTime();
     time->start();
 }
 
-void SLProjectorVirtual::waitForProjection(){
+void SLProjectorVirtual::waitForProjection() {
     // Wait till 17 msec have elapsed on time
     unsigned int elapsed = time->elapsed();
-    if(elapsed < 33) {
-        QThread::msleep(33 -elapsed);
+    if (elapsed < 33) {
+        QThread::msleep(33 - elapsed);
     }
 
     // Reset time
     time->restart();
 }
 
-void SLProjectorVirtual::displayPattern(unsigned int){
+void SLProjectorVirtual::displayPattern(unsigned int) { this->waitForProjection(); }
+
+void SLProjectorVirtual::displayTexture(const unsigned char *, unsigned int, unsigned int) {
     this->waitForProjection();
 }
 
-void SLProjectorVirtual::displayTexture(const unsigned char*, unsigned int, unsigned int){
-    this->waitForProjection();
-}
+void SLProjectorVirtual::displayBlack() { this->waitForProjection(); }
 
-void SLProjectorVirtual::displayBlack(){
-    this->waitForProjection();
-}
+void SLProjectorVirtual::displayWhite() { this->waitForProjection(); }
 
-void SLProjectorVirtual::displayWhite(){
-    this->waitForProjection();
-}
-
-void SLProjectorVirtual::getScreenRes(unsigned int *nx, unsigned int *ny){
+void SLProjectorVirtual::getScreenRes(unsigned int *nx, unsigned int *ny) {
     *nx = 640;
     *ny = 480;
 }
 
-SLProjectorVirtual::~SLProjectorVirtual(){
-    delete time;
-}
+SLProjectorVirtual::~SLProjectorVirtual() { delete time; }

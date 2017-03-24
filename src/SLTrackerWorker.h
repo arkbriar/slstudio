@@ -16,33 +16,34 @@
 #include "Tracker.h"
 
 #ifndef Q_MOC_RUN
-    #include <Eigen/Eigen>
+#include <Eigen/Eigen>
 #endif
-
 
 class SLTrackerWorker : public QObject {
     Q_OBJECT
 
-    public:
-        SLTrackerWorker() : busy(false), tracker(NULL), referenceSet(false), writeToDisk(false){}
-        ~SLTrackerWorker();
-    public slots:
-        void setup();
-        void trackPointCloud(PointCloudConstPtr pointCloud);
-        void setReference(PointCloudConstPtr referencePointCloud);
-    signals:
-        void newPoseEstimate(Eigen::Affine3f T);
-        void error(QString err);
-    private:
-        bool busy;
-        Tracker *tracker;
-        QTime performanceTime;
-        QTime trackingTime;
-        bool referenceSet;
-        bool writeToDisk;
-        std::ofstream *ofStream;
-    public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+   public:
+    SLTrackerWorker() : busy(false), tracker(NULL), referenceSet(false), writeToDisk(false) {}
+    ~SLTrackerWorker();
+   public slots:
+    void setup();
+    void trackPointCloud(PointCloudConstPtr pointCloud);
+    void setReference(PointCloudConstPtr referencePointCloud);
+   signals:
+    void newPoseEstimate(Eigen::Affine3f T);
+    void error(QString err);
+
+   private:
+    bool busy;
+    Tracker *tracker;
+    QTime performanceTime;
+    QTime trackingTime;
+    bool referenceSet;
+    bool writeToDisk;
+    std::ofstream *ofStream;
+
+   public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 #endif

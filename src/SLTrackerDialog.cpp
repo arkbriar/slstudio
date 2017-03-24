@@ -1,7 +1,12 @@
 #include "SLTrackerDialog.h"
 #include "ui_SLTrackerDialog.h"
 
-SLTrackerDialog::SLTrackerDialog(QWidget *parent) : QDialog(parent), ui(new Ui::SLTrackerDialog), trackerWorkerThread(NULL), trackerWorker(NULL), tracking(false){
+SLTrackerDialog::SLTrackerDialog(QWidget *parent)
+    : QDialog(parent),
+      ui(new Ui::SLTrackerDialog),
+      trackerWorkerThread(NULL),
+      trackerWorker(NULL),
+      tracking(false) {
     ui->setupUi(this);
 
     // Create QDockWidget like action associated with dialog
@@ -23,23 +28,16 @@ SLTrackerDialog::SLTrackerDialog(QWidget *parent) : QDialog(parent), ui(new Ui::
 }
 
 // QDockWidget like, return a checkable action in sync with visibility
-QAction* SLTrackerDialog::toggleViewAction(){
-    return action;
-}
+QAction *SLTrackerDialog::toggleViewAction() { return action; }
 
-void SLTrackerDialog::receiveNewPointCloud(PointCloudConstPtr pointCloud){
+void SLTrackerDialog::receiveNewPointCloud(PointCloudConstPtr pointCloud) {
     emit newPointCloud(pointCloud);
 }
 
-SLTrackerDialog::~SLTrackerDialog(){
+SLTrackerDialog::~SLTrackerDialog() { delete ui; }
 
-    delete ui;
-
-}
-
-void SLTrackerDialog::on_startStopPushButton_clicked(){
-
-    if(!tracking){
+void SLTrackerDialog::on_startStopPushButton_clicked() {
+    if (!tracking) {
         // Prepare trackerWorker on separate thread
         trackerWorker = new SLTrackerWorker();
         trackerWorkerThread = new QThread(this);
@@ -50,10 +48,13 @@ void SLTrackerDialog::on_startStopPushButton_clicked(){
 
         QMetaObject::invokeMethod(trackerWorker, "setup");
 
-        qRegisterMetaType< Eigen::Affine3f >("Eigen::Affine3f");
-        connect(this, SIGNAL(newPointCloud(PointCloudConstPtr)), trackerWorker, SLOT(trackPointCloud(PointCloudConstPtr)));
-//        connect(trackerWorker, SIGNAL(newPoseEstimate(Eigen::Affine3f)), ui->poseWidget, SLOT(showPoseEstimate(Eigen::Affine3f)));
-        connect(trackerWorker, SIGNAL(newPoseEstimate(Eigen::Affine3f)), this, SLOT(showPoseEstimate(Eigen::Affine3f)));
+        qRegisterMetaType<Eigen::Affine3f>("Eigen::Affine3f");
+        connect(this, SIGNAL(newPointCloud(PointCloudConstPtr)), trackerWorker,
+                SLOT(trackPointCloud(PointCloudConstPtr)));
+        //        connect(trackerWorker, SIGNAL(newPoseEstimate(Eigen::Affine3f)), ui->poseWidget,
+        //        SLOT(showPoseEstimate(Eigen::Affine3f)));
+        connect(trackerWorker, SIGNAL(newPoseEstimate(Eigen::Affine3f)), this,
+                SLOT(showPoseEstimate(Eigen::Affine3f)));
         connect(trackerWorkerThread, SIGNAL(finished()), trackerWorker, SLOT(deleteLater()));
 
         tracking = true;
@@ -61,7 +62,7 @@ void SLTrackerDialog::on_startStopPushButton_clicked(){
 
     } else {
         // Terminate tracker worker thread
-        if(trackerWorkerThread && trackerWorkerThread->isRunning()){
+        if (trackerWorkerThread && trackerWorkerThread->isRunning()) {
             trackerWorkerThread->quit();
             trackerWorkerThread->wait();
         }
@@ -72,20 +73,16 @@ void SLTrackerDialog::on_startStopPushButton_clicked(){
     }
 }
 
-void SLTrackerDialog::showEvent(QShowEvent *){
-    if(!action->isChecked())
-        action->setChecked(true);
+void SLTrackerDialog::showEvent(QShowEvent *) {
+    if (!action->isChecked()) action->setChecked(true);
 }
 
-void SLTrackerDialog::closeEvent(QCloseEvent *){
-    action->setChecked(false);
-}
+void SLTrackerDialog::closeEvent(QCloseEvent *) { action->setChecked(false); }
 
-void SLTrackerDialog::showPoseEstimate(Eigen::Affine3f T){
-
-    if(ui->poseTab->isVisible()){
+void SLTrackerDialog::showPoseEstimate(Eigen::Affine3f T) {
+    if (ui->poseTab->isVisible()) {
         ui->poseWidget->showPoseEstimate(T);
-    } else if(ui->traceTab->isVisible()){
+    } else if (ui->traceTab->isVisible()) {
         Eigen::Vector3f t(T.translation());
         Eigen::Quaternionf q(T.rotation());
 

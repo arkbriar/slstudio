@@ -10,19 +10,19 @@ namespace Ui {
 class CameraTest;
 }
 
-class CameraTest : public QDialog
-{
+class CameraTest : public QDialog {
     Q_OBJECT
-    
-public:
+
+   public:
     explicit CameraTest(QWidget *parent = 0);
     ~CameraTest();
     void closeEvent(QCloseEvent *);
-private:
+
+   private:
     Ui::CameraTest *ui;
     Camera *camera;
     QThread *cameraThread;
     CameraWorker *cameraWorker;
 };
 
-#endif // CAMERAVIEW_H
+#endif  // CAMERAVIEW_H

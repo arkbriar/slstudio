@@ -4,11 +4,10 @@
 #include <stdio.h>
 #include <QThread>
 
-CameraTest::CameraTest(QWidget *parent) : QDialog(parent), ui(new Ui::CameraTest){
-
+CameraTest::CameraTest(QWidget *parent) : QDialog(parent), ui(new Ui::CameraTest) {
     ui->setupUi(this);
 
-    std::vector< std::vector<CameraInfo> > cameras;
+    std::vector<std::vector<CameraInfo> > cameras;
     cameras = Camera::GetInterfaceCameraList();
 
     cameraThread = new QThread;
@@ -24,11 +23,9 @@ CameraTest::CameraTest(QWidget *parent) : QDialog(parent), ui(new Ui::CameraTest
     QMetaObject::invokeMethod(cameraWorker, "setup", Q_ARG(unsigned, 1), Q_ARG(unsigned, 0));
     // Start capturing
     QMetaObject::invokeMethod(cameraWorker, "doWork");
-
 }
 
-void CameraTest::closeEvent(QCloseEvent *){
-
+void CameraTest::closeEvent(QCloseEvent *) {
     disconnect(cameraWorker, SIGNAL(newFrame(cv::Mat)), ui->widget, SLOT(showFrameCV(cv::Mat)));
     QApplication::processEvents();
 
@@ -38,9 +35,6 @@ void CameraTest::closeEvent(QCloseEvent *){
     cameraThread->quit();
     cameraThread->wait();
     cameraThread->deleteLater();
-
 }
 
-CameraTest::~CameraTest(){
-    delete ui;
-}
+CameraTest::~CameraTest() { delete ui; }

@@ -9,33 +9,37 @@
 #include <pcl/tracking/particle_filter.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 
-//typedef pcl::tracking::KLDAdaptiveParticleFilterTracker<pcl::PointXYZRGB, pcl::tracking::ParticleXYZRPY> TrackerType;
-typedef pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<pcl::PointXYZRGB, pcl::tracking::ParticleXYZRPY> TrackerType;
+// typedef pcl::tracking::KLDAdaptiveParticleFilterTracker<pcl::PointXYZRGB,
+// pcl::tracking::ParticleXYZRPY> TrackerType;
+typedef pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<pcl::PointXYZRGB,
+                                                           pcl::tracking::ParticleXYZRPY>
+    TrackerType;
 
-//typedef pcl::tracking::ParticleFilterTracker<pcl::PointXYZRGB, pcl::tracking::ParticleXYZRPY> TrackerType;
+// typedef pcl::tracking::ParticleFilterTracker<pcl::PointXYZRGB, pcl::tracking::ParticleXYZRPY>
+// TrackerType;
 typedef pcl::tracking::ApproxNearestPairPointCloudCoherence<pcl::PointXYZRGB> CoherenceType;
 
 typedef pcl::ApproximateVoxelGrid<pcl::PointXYZRGB> FilterType;
 
 class TrackerPCL : public Tracker {
-    public:
-        TrackerPCL();
-        void setReference(PointCloudConstPtr refPointCloud);
-        void determineTransformation(PointCloudConstPtr pointCloud, Eigen::Affine3f &T, bool &converged, float &RMS);
-        ~TrackerPCL();
-        void setCameraMatrix(Eigen::Matrix3f _cameraMatrix){}
+   public:
+    TrackerPCL();
+    void setReference(PointCloudConstPtr refPointCloud);
+    void determineTransformation(PointCloudConstPtr pointCloud, Eigen::Affine3f &T, bool &converged,
+                                 float &RMS);
+    ~TrackerPCL();
+    void setCameraMatrix(Eigen::Matrix3f _cameraMatrix) {}
 
+   private:
+    boost::shared_ptr<TrackerType> tracker;
+    boost::shared_ptr<CoherenceType> coherence;
+    boost::shared_ptr<FilterType> approximateVoxelFilter;
+    // Eigen::Matrix4f lastTransformation;
 
-    private:
-        boost::shared_ptr<TrackerType> tracker;
-        boost::shared_ptr<CoherenceType> coherence;
-        boost::shared_ptr<FilterType> approximateVoxelFilter;
-        //Eigen::Matrix4f lastTransformation;
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr refPointCloudNormals;
 
-        pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr refPointCloudNormals;
-    public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
+   public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-#endif // TRACKER_H
+#endif  // TRACKER_H

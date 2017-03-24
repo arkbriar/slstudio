@@ -20,26 +20,26 @@ class SLTrackerDialog;
 class SLTrackerDialog : public QDialog {
     Q_OBJECT
 
-    public:
-        explicit SLTrackerDialog(QWidget *parent = 0);
-        QAction* toggleViewAction();
-        void showEvent(QShowEvent *);
-        void closeEvent(QCloseEvent *);
-        ~SLTrackerDialog();
-    public slots:
-        void receiveNewPointCloud(PointCloudConstPtr pointCloud);
-        void showPoseEstimate(Eigen::Affine3f T);
-    private slots:
-        void on_startStopPushButton_clicked();
-    signals:
-        void newPointCloud(PointCloudConstPtr pointCloud);
-    private:
-        Ui::SLTrackerDialog *ui;
-        QThread *trackerWorkerThread;
-        SLTrackerWorker *trackerWorker;
-        bool tracking;
-        QAction *action;
+   public:
+    explicit SLTrackerDialog(QWidget *parent = 0);
+    QAction *toggleViewAction();
+    void showEvent(QShowEvent *);
+    void closeEvent(QCloseEvent *);
+    ~SLTrackerDialog();
+   public slots:
+    void receiveNewPointCloud(PointCloudConstPtr pointCloud);
+    void showPoseEstimate(Eigen::Affine3f T);
+   private slots:
+    void on_startStopPushButton_clicked();
+   signals:
+    void newPointCloud(PointCloudConstPtr pointCloud);
 
+   private:
+    Ui::SLTrackerDialog *ui;
+    QThread *trackerWorkerThread;
+    SLTrackerWorker *trackerWorker;
+    bool tracking;
+    QAction *action;
 };
 
-#endif // SLTRACKERDIALOG_H
+#endif  // SLTRACKERDIALOG_H

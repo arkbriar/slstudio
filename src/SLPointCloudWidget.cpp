@@ -27,8 +27,8 @@
 #include <QFileDialog>
 #include <QKeyEvent>
 
-SLPointCloudWidget::SLPointCloudWidget(QWidget *parent) : QVTKWidget(parent), surfaceReconstruction(false) {
-
+SLPointCloudWidget::SLPointCloudWidget(QWidget* parent)
+    : QVTKWidget(parent), surfaceReconstruction(false) {
     visualizer = new pcl::visualization::PCLVisualizer("PCLVisualizer", false);
     this->SetRenderWindow(visualizer->getRenderWindow());
 
@@ -42,7 +42,7 @@ SLPointCloudWidget::SLPointCloudWidget(QWidget *parent) : QVTKWidget(parent), su
     // Create point cloud viewport
     visualizer->setBackgroundColor(255, 255, 255);
     visualizer->addCoordinateSystem(50, 0);
-    visualizer->setCameraPosition(0,0,-50,0,0,0,0,-1,0);
+    visualizer->setCameraPosition(0, 0, -50, 0, 0, 0, 0, -1, 0);
     visualizer->setCameraClipDistances(0.1, 10000);
     // Initialize point cloud color handler
     colorHandler = new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB>();
@@ -50,14 +50,13 @@ SLPointCloudWidget::SLPointCloudWidget(QWidget *parent) : QVTKWidget(parent), su
     // Initialize surface reconstruction objection
     reconstructor = new pcl::OrganizedFastMesh<pcl::PointXYZRGB>;
 
-    //reconstructor->setTriangulationType(pcl::OrganizedFastMesh<pcl::PointXYZRGB>::TRIANGLE_ADAPTIVE_CUT);
-    //reconstructor->setMaxEdgeLength(3.0);
-    //reconstructor->setTrianglePixelSize(2);
+    // reconstructor->setTriangulationType(pcl::OrganizedFastMesh<pcl::PointXYZRGB>::TRIANGLE_ADAPTIVE_CUT);
+    // reconstructor->setMaxEdgeLength(3.0);
+    // reconstructor->setTrianglePixelSize(2);
     time.start();
 }
 
-void SLPointCloudWidget::updateCalibration(){
-
+void SLPointCloudWidget::updateCalibration() {
     CalibrationData calibration;
     calibration.load("calibration.xml");
 
@@ -74,20 +73,21 @@ void SLPointCloudWidget::updateCalibration(){
     visualizer->addCoordinateSystem(50, TransformP.inverse(), "projector", 0);
 }
 
-void SLPointCloudWidget::keyPressEvent(QKeyEvent *event){
-
-//    std::cout << event->key() << std::endl;
+void SLPointCloudWidget::keyPressEvent(QKeyEvent* event) {
+    //    std::cout << event->key() << std::endl;
     // Switch between color handlers
-    switch(event->key()){
+    switch (event->key()) {
         case '1':
             surfaceReconstruction = false;
             visualizer->removePolygonMesh("meshPCL");
-            colorHandler = new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB>();
+            colorHandler =
+                new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB>();
             break;
         case '2':
             surfaceReconstruction = false;
             visualizer->removePolygonMesh("meshPCL");
-            colorHandler = new pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZRGB>("z");
+            colorHandler =
+                new pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZRGB>("z");
             break;
         case '3':
             surfaceReconstruction = true;
@@ -97,89 +97,84 @@ void SLPointCloudWidget::keyPressEvent(QKeyEvent *event){
 
     updatePointCloud(pointCloudPCL);
 
-    if(!(('0' <= event->key()) & (event->key() <= '9')))
-        QVTKWidget::keyPressEvent(event);
+    if (!(('0' <= event->key()) & (event->key() <= '9'))) QVTKWidget::keyPressEvent(event);
 }
 
-void SLPointCloudWidget::updatePointCloud(PointCloudConstPtr _pointCloudPCL){
+void SLPointCloudWidget::updatePointCloud(PointCloudConstPtr _pointCloudPCL) {
+    if (!_pointCloudPCL || _pointCloudPCL->points.empty()) return;
 
-    if(!_pointCloudPCL || _pointCloudPCL->points.empty())
-        return;
-
-//    time.restart();
+    //    time.restart();
 
     pointCloudPCL = _pointCloudPCL;
 
-    if(surfaceReconstruction){
+    if (surfaceReconstruction) {
         reconstructor->setInputCloud(pointCloudPCL);
         std::vector<pcl::Vertices> polygons;
         reconstructor->reconstruct(polygons);
-        if(!visualizer->updatePolygonMesh<pcl::PointXYZRGB>(pointCloudPCL, polygons, "meshPCL")){
+        if (!visualizer->updatePolygonMesh<pcl::PointXYZRGB>(pointCloudPCL, polygons, "meshPCL")) {
             visualizer->addPolygonMesh<pcl::PointXYZRGB>(pointCloudPCL, polygons, "meshPCL");
-         }
+        }
     } else {
         // Note: using the color handler makes a copy of the rgb fields
         colorHandler->setInputCloud(pointCloudPCL);
-        if(!visualizer->updatePointCloud(pointCloudPCL, *colorHandler, "pointCloudPCL")){
+        if (!visualizer->updatePointCloud(pointCloudPCL, *colorHandler, "pointCloudPCL")) {
             visualizer->addPointCloud(pointCloudPCL, *colorHandler, "pointCloudPCL");
-            visualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.0, "pointCloudPCL");
-         }
+            visualizer->setPointCloudRenderingProperties(
+                pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.0, "pointCloudPCL");
+        }
     }
 
     this->update();
     emit newPointCloudDisplayed();
 
-//    std::cout << "PCL Widget: " << time.restart() << "ms" << std::endl;
+    //    std::cout << "PCL Widget: " << time.restart() << "ms" << std::endl;
 }
 
-void SLPointCloudWidget::savePointCloud(){
-
+void SLPointCloudWidget::savePointCloud() {
     QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, "Save Point Cloud", QString(), "*.pcd;;*.ply;;*.vtk;;*.png;;*.txt", &selectedFilter);
+    QString fileName = QFileDialog::getSaveFileName(
+        this, "Save Point Cloud", QString(), "*.pcd;;*.ply;;*.vtk;;*.png;;*.txt", &selectedFilter);
     QFileInfo info(fileName);
     QString type = info.suffix();
-    if(type == ""){
-        fileName.append(selectedFilter.remove(0,1));
-        type = selectedFilter.remove(0,1);
+    if (type == "") {
+        fileName.append(selectedFilter.remove(0, 1));
+        type = selectedFilter.remove(0, 1);
     }
 
-    if(type == "pcd"){
+    if (type == "pcd") {
         pcl::io::savePCDFileASCII(fileName.toStdString(), *pointCloudPCL);
-    } else if(type == "ply"){
-        //pcl::io::savePLYFileBinary( fileName.toStdString(), *pointCloudPCL);
+    } else if (type == "ply") {
+        // pcl::io::savePLYFileBinary( fileName.toStdString(), *pointCloudPCL);
         pcl::PLYWriter w;
         // Write to ply in binary without camera
-        w.write<pcl::PointXYZRGB> (fileName.toStdString(), *pointCloudPCL, true, false);
-    } else if(type == "vtk"){
+        w.write<pcl::PointXYZRGB>(fileName.toStdString(), *pointCloudPCL, true, false);
+    } else if (type == "vtk") {
         pcl::PCLPointCloud2 pointCloud2;
         pcl::toPCLPointCloud2(*pointCloudPCL, pointCloud2);
         pcl::io::saveVTKFile(fileName.toStdString(), pointCloud2);
 
-//        vtkPolyData polyData;
-//        pcl::io::pointCloudTovtkPolyData(*pointCloudPCL, polyData);
-//        vtkPolyDataWriter::Pointer writer = vtkPolyDataWriter::New();
-//        writer->SetInput(polyData);
-//        writer->SetFileName(fileName.toStdString());
-//        writer->Update();
-    } else if(type == "png"){
+        //        vtkPolyData polyData;
+        //        pcl::io::pointCloudTovtkPolyData(*pointCloudPCL, polyData);
+        //        vtkPolyDataWriter::Pointer writer = vtkPolyDataWriter::New();
+        //        writer->SetInput(polyData);
+        //        writer->SetFileName(fileName.toStdString());
+        //        writer->Update();
+    } else if (type == "png") {
         pcl::io::savePNGFile(fileName.toStdString(), *pointCloudPCL, "rgb");
-    } else if(type == "txt"){
+    } else if (type == "txt") {
         std::ofstream s(fileName.toLocal8Bit());
-        for(unsigned int r=0; r<pointCloudPCL->height; r++){
-            for(unsigned int c=0; c<pointCloudPCL->width; c++){
+        for (unsigned int r = 0; r < pointCloudPCL->height; r++) {
+            for (unsigned int c = 0; c < pointCloudPCL->width; c++) {
                 pcl::PointXYZRGB p = pointCloudPCL->at(c, r);
-                if(p.x == p.x)
-                    s << p.x << " " << p.y << " " << p.z << "\r\n";
+                if (p.x == p.x) s << p.x << " " << p.y << " " << p.z << "\r\n";
             }
         }
         std::flush(s);
         s.close();
     }
-
 }
 
-void SLPointCloudWidget::saveScreenShot(){
-
+void SLPointCloudWidget::saveScreenShot() {
     vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
     filter->SetInput(visualizer->getRenderWindow());
     filter->Modified();
@@ -187,8 +182,7 @@ void SLPointCloudWidget::saveScreenShot(){
     QString fileName = QFileDialog::getSaveFileName(this, "Save Screen Shot", QString(), "*.png");
     QFileInfo info(fileName);
     QString type = info.suffix();
-    if(type == "")
-        fileName.append(".png");
+    if (type == "") fileName.append(".png");
 
     vtkPNGWriter* writer = vtkPNGWriter::New();
     writer->SetInputConnection(filter->GetOutputPort());
@@ -197,8 +191,6 @@ void SLPointCloudWidget::saveScreenShot(){
     writer->Delete();
 }
 
-SLPointCloudWidget::~SLPointCloudWidget(){
-
-    //delete visualizer;
-
+SLPointCloudWidget::~SLPointCloudWidget() {
+    // delete visualizer;
 }

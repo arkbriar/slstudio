@@ -19,8 +19,7 @@
 #ifndef ERROR_H_
 #define ERROR_H_
 
-typedef enum
-{
+typedef enum {
     SUCCESS = 0,
     FAIL,
     ERR_OUT_OF_RESOURCE,
@@ -30,10 +29,9 @@ typedef enum
     ERR_DEVICE_FAIL,
     ERR_DEVICE_BUSY,
     ERR_FORMAT_ERROR,
-	ERR_TIMEOUT,
+    ERR_TIMEOUT,
     ERR_NOT_SUPPORTED,
-	ERR_NOT_FOUND
+    ERR_NOT_FOUND
 } ErrorCode_t;
-
 
 #endif /* ERROR_H_ */
