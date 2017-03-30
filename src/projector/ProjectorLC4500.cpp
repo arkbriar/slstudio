@@ -35,14 +35,14 @@ ProjectorLC4500::ProjectorLC4500(unsigned int) : nPatterns(0), isRunning(false) 
     // Set LED selection
     const bool SeqCtrl = true;  // manual (false) or automatic (true)
     const bool LEDRed = true;
-    const bool LEDGreen = false;
-    const bool LEDBlue = false;
+    const bool LEDGreen = true;
+    const bool LEDBlue = true;
     LCR_SetLedEnables(SeqCtrl, LEDRed, LEDGreen, LEDBlue);
 
     // Set LED currents
-    const unsigned char RedCurrent = 90;
-    const unsigned char GreenCurrent = 0;
-    const unsigned char BlueCurrent = 0;
+    const unsigned char RedCurrent = 150;
+    const unsigned char GreenCurrent = 150;
+    const unsigned char BlueCurrent = 150;
     LCR_SetLedCurrents(255 - RedCurrent, 255 - GreenCurrent, 255 - BlueCurrent);
 
     unsigned char Red;
