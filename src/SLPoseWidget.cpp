@@ -8,14 +8,14 @@ SLPoseWidget::SLPoseWidget(QWidget *parent) : QVTKWidget(parent) {
     this->SetRenderWindow(visualizer->getRenderWindow());
 
     visualizer->setShowFPS(false);
-    this->setMouseTracking(false);
+    this->setMouseTracking(true);
 
     // Create pose viewport
-    visualizer->setBackgroundColor(0.3, 0.3, 0.3);
+    visualizer->setBackgroundColor(0, 0, 0);
 
     // Add ply model
     bool success =
-        visualizer->addModelFromPLYFile("/home/jakw/Code/Repos/SLStudio/src/resources/head.ply");
+        visualizer->addModelFromPLYFile("resources/head.ply");
 
     if (!success) {
         // Show cube as a fallback

@@ -33,16 +33,17 @@ SLPointCloudWidget::SLPointCloudWidget(QWidget* parent)
     this->SetRenderWindow(visualizer->getRenderWindow());
 
     // Disable double buffering (which is enabled per default in VTK6)
-    visualizer->getRenderWindow()->SetDoubleBuffer(0);
+    // visualizer->getRenderWindow()->SetDoubleBuffer(0);
 
-    visualizer->setShowFPS(false);
+    visualizer->setShowFPS(true);
+    this->setMouseTracking(true);
 
     this->updateCalibration();
 
     // Create point cloud viewport
-    visualizer->setBackgroundColor(255, 255, 255);
+    visualizer->setBackgroundColor(250, 250, 250);
     visualizer->addCoordinateSystem(50, 0);
-    visualizer->setCameraPosition(0, 0, -50, 0, 0, 0, 0, -1, 0);
+    visualizer->setCameraPosition(0, 0, -150, 0, 0, 0, 0, -1, 0);
     visualizer->setCameraClipDistances(0.1, 10000);
     // Initialize point cloud color handler
     colorHandler = new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB>();
