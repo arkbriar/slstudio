@@ -191,6 +191,7 @@ void SLPointCloudWidget::saveScreenShot() {
     writer->Delete();
 }
 
-SLPointCloudWidget::~SLPointCloudWidget() {
-    // delete visualizer;
+SLPointCloudWidget::~SLPointCloudWidget(){
+
+    delete visualizer;
 }

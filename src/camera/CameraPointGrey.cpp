@@ -152,8 +152,8 @@ void CameraPointGrey::startCapture() {
         FlyCapture2::TriggerMode triggerMode;
         triggerMode.onOff = true;
         triggerMode.polarity = 0;
-        triggerMode.source = 0;
-        triggerMode.mode = 14;
+        triggerMode.source = 2;
+        triggerMode.mode = 0;
         error = cam.SetTriggerMode(&triggerMode);
         if (error != FlyCapture2::PGRERROR_OK) PrintError(error);
 
@@ -173,7 +173,7 @@ void CameraPointGrey::startCapture() {
 
     // Set the trigger timeout to 1000 ms
     FlyCapture2::FC2Config config;
-    config.grabTimeout = 1000;
+    config.grabTimeout = 100000;
     error = cam.SetConfiguration(&config);
     if (error != FlyCapture2::PGRERROR_OK) PrintError(error);
 

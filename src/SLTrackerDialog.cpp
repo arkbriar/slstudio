@@ -47,14 +47,10 @@ void SLTrackerDialog::on_startStopPushButton_clicked() {
         trackerWorkerThread->start(QThread::LowPriority);
 
         QMetaObject::invokeMethod(trackerWorker, "setup");
-
-        qRegisterMetaType<Eigen::Affine3f>("Eigen::Affine3f");
-        connect(this, SIGNAL(newPointCloud(PointCloudConstPtr)), trackerWorker,
-                SLOT(trackPointCloud(PointCloudConstPtr)));
-        //        connect(trackerWorker, SIGNAL(newPoseEstimate(Eigen::Affine3f)), ui->poseWidget,
-        //        SLOT(showPoseEstimate(Eigen::Affine3f)));
-        connect(trackerWorker, SIGNAL(newPoseEstimate(Eigen::Affine3f)), this,
-                SLOT(showPoseEstimate(Eigen::Affine3f)));
+        qRegisterMetaType< Eigen::Affine3f >("Eigen::Affine3f");
+        connect(this, SIGNAL(newPointCloud(PointCloudConstPtr)), trackerWorker, SLOT(trackPointCloud(PointCloudConstPtr)));
+//        connect(trackerWorker, SIGNAL(newPoseEstimate(Eigen::Affine3f)), ui->poseWidget, SLOT(showPoseEstimate(Eigen::Affine3f)))/
+        connect(trackerWorker, SIGNAL(newPoseEstimate(Eigen::Affine3f)), this, SLOT(showPoseEstimate(Eigen::Affine3f)));
         connect(trackerWorkerThread, SIGNAL(finished()), trackerWorker, SLOT(deleteLater()));
 
         tracking = true;
@@ -67,7 +63,6 @@ void SLTrackerDialog::on_startStopPushButton_clicked() {
             trackerWorkerThread->wait();
         }
 
-        disconnect(trackerWorker);
         tracking = false;
         ui->startStopPushButton->setText("Start Tracking");
     }

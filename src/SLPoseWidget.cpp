@@ -102,6 +102,6 @@ void SLPoseWidget::showPoseEstimate(Eigen::Affine3f T) {
     this->update();
 }
 
-SLPoseWidget::~SLPoseWidget() {
-    // delete visualizer;
+SLPoseWidget::~SLPoseWidget(){
+    delete visualizer;
 }

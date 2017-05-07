@@ -267,8 +267,7 @@ void SLScanWorker::doWork() {
         QCoreApplication::processEvents();
 
     } while (isWorking && (aquisition == aquisitionContinuous));
-
-    if (triggerMode == triggerModeHardware) camera->stopCapture();
+    camera->stopCapture();
 
     // Emit message to e.g. initiate thread break down
     emit finished();
